@@ -1,0 +1,56 @@
+﻿@page "/staff"
+
+@using AO=DataAccess.DataModels.StaffMaster
+@using IS=Business.Service.Interface
+@using SM=Models.Viewmodels
+@inject HttpClient Client
+@inject IJSRuntime JSRuntime
+
+<h3>Staff</h3>
+<EditForm Model="@staffmaster" Context="formContext">
+    <h4>First Name</h4><input id="Fname" @bind-value="staffmaster.Fname" />
+    <h4>Address</h4><input id="Saddress" @bind-value="staffmaster.Address"></input>
+    <h4>Mobile</h4><input id="Mobile" @bind-value="staffmaster.Mobile" />
+    <h4>Age</h4><input id="Age" @bind-value="staffmaster.Age" />
+    <h4>DOB</h4><input id="dob" @bind-value="staffmaster.Dob" />
+    <h4>Salary</h4><input id="Salary" @bind-value="staffmaster.Salary" />
+    <button type="button" @onclick="()=>SubmitStaff(formContext)">Submit</button>
+</EditForm>
+@code {
+    public AO aO { get; set; } = new();
+
+
+    SM.StaffMaster staffmaster = new();
+
+    public async Task SubmitStaff(EditContext context)
+    {
+
+        if (!context.Validate())
+        {
+            return;
+        }
+        if (staffmaster != null)  // Check if masters is not null
+        {
+            //for service add
+            //await masterService.Add(staffmaster); 
+            try
+            {
+                //api add
+                var StaffMaster = new SM.StaffMaster();
+                var status = await Client.PostAsync("api/staff/add",null);
+                if (status.IsSuccessStatusCode)
+                {
+                    await JSRuntime.InvokeVoidAsync("toastrSuccess", "Staff Added Successfully");
+                }
+
+            }
+            catch(Exception ex)
+            {
+                 Console.WriteLine($"Error adding staff: {ex.Message}");
+            }
+
+        }
+        //nav.NavigateTo("/");
+    }
+}
+

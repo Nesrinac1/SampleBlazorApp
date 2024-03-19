@@ -60,6 +60,70 @@ namespace WebAPI.Controllers
                 throw;
             }
         }
+        
+        //POST: Add new staff
+
+        [HttpPost]
+        public async Task<Models.Viewmodels.StaffMaster> Add(Models.Viewmodels.StaffMaster staffmaster)
+        {
+            try
+            {
+                var dbStaff = _mapper.Map<Models.Viewmodels.StaffMaster, DataAccess.DataModels.StaffMaster>(staffmaster);
+                await _dbContext.StaffMasters.AddAsync(dbStaff);
+                _dbContext.SaveChanges();
+                var newStaff = _mapper.Map<DataAccess.DataModels.StaffMaster, Models.Viewmodels.StaffMaster>(dbStaff);
+                return newStaff;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        //Patch :update staff
+
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateStaff(Models.Viewmodels.StaffMaster staffmaster, int id)
+        {
+            try
+            {
+                var dbStaff = await _dbContext.StaffMasters.FindAsync(id);
+
+                _mapper.Map(staffmaster, dbStaff);
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(staffmaster); // Return updated staffmaster
+
+            }
+            catch
+            {
+                throw; // Rethrow exception to be handled by global exception handler
+            }
+
+        }
+
+        //get by id
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetStaffById(int id)
+        {
+            try
+            {
+                var staff = await _dbContext.StaffMasters.FindAsync(id);
+
+
+
+                var staffViewModel = _mapper.Map<Models.Viewmodels.StaffMaster>(staff);
+
+                return Ok(staffViewModel); // Return staff member
+            }
+            catch
+            {
+                throw; // Rethrow exception to be handled by global exception handler
+            }
+        }
 
         
     }
